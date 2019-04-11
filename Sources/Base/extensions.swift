@@ -19,6 +19,33 @@
 //
 
 import Foundation
+import WebKit
+
+extension URL {
+    public var queryParameters: [String: String]? {
+        guard
+            let components = URLComponents(url: self, resolvingAgainstBaseURL: true),
+            let queryItems = components.queryItems else { return nil }
+        return queryItems.reduce(into: [String: String]()) { (result, item) in
+            result[item.name] = item.value
+        }
+    }
+}
+
+extension WKWebView {
+    
+    @available(iOS 11.0, *)
+    private var httpCookieStore: WKHTTPCookieStore  {
+        return WKWebsiteDataStore.default().httpCookieStore
+    }
+    
+    @available(iOS 11.0, *)
+    func getCookies(completion: @escaping ([HTTPCookie])->())  {
+        httpCookieStore.getAllCookies { (cookies) in
+            completion(cookies)
+        }
+    }
+}
 
 
 extension HTTPURLResponse {

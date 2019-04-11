@@ -74,7 +74,7 @@ open class OAuth2Requestable {
 	/// `sessionConfiguration` and/or `sessionDelegate` to affect how the session is configured.
 	open var session: URLSession {
 		if nil == _session {
-			let config = sessionConfiguration ?? URLSessionConfiguration.ephemeral
+			let config = sessionConfiguration ?? URLSessionConfiguration.default
 			_session = URLSession(configuration: config, delegate: sessionDelegate, delegateQueue: nil)
 		}
 		return _session!

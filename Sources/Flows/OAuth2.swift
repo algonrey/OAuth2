@@ -271,6 +271,13 @@ open class OAuth2: OAuth2Base {
 		}
 		
 		let req = OAuth2AuthRequest(url: clientConfig.authorizeURL, method: .GET)
+        
+        if let existing_params = clientConfig.authorizeURL.queryParameters {
+            for (key, value) in existing_params {
+                req.params[key] = value
+            }
+        }
+        
 		req.params["redirect_uri"] = redirect
 		req.params["state"] = context.state
 		if let clientId = clientId {

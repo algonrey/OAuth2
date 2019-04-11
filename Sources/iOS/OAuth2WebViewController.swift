@@ -190,6 +190,59 @@ open class OAuth2WebViewController: UIViewController, WKNavigationDelegate {
 	
 	
 	// MARK: - Web View Delegate
+    
+    public func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        
+        guard let _ = webView.url?.host else {
+            return
+        }
+        
+        let authenticationMethod = challenge.protectionSpace.authenticationMethod
+        if authenticationMethod == NSURLAuthenticationMethodDefault || authenticationMethod == NSURLAuthenticationMethodHTTPBasic || authenticationMethod == NSURLAuthenticationMethodHTTPDigest {
+            let av = UIAlertController(title: webView.title, message: "Auth required", preferredStyle: .alert)
+            av.addTextField(configurationHandler: { (textField) in
+                textField.placeholder = "User"
+            })
+            av.addTextField(configurationHandler: { (textField) in
+                textField.placeholder = "Password"
+                textField.isSecureTextEntry = true
+            })
+            
+            av.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in
+                guard let userId = av.textFields?.first?.text else{
+                    return
+                }
+                guard let password = av.textFields?.last?.text else {
+                    return
+                }
+                let credential = URLCredential(user: userId, password: password, persistence: .none)
+                completionHandler(.useCredential,credential)
+            }))
+            av.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+                completionHandler(.cancelAuthenticationChallenge, nil);
+            }))
+            self.parent?.present(av, animated: true, completion: nil)
+        }else if authenticationMethod == NSURLAuthenticationMethodServerTrust{
+            // needs this handling on iOS 9
+            completionHandler(.performDefaultHandling, nil);
+        }else{
+            completionHandler(.cancelAuthenticationChallenge, nil);
+        }
+        
+    }
+    func saveCookies() {
+        
+        if #available(iOS 11.0, *), webView != nil {
+            webView!.getCookies(completion: { (cookies) in
+                
+                print("Cookies in webview: \(cookies.count)")
+                for cookie in cookies {
+                    HTTPCookieStorage.shared.setCookie(cookie)
+                }
+                
+            })
+        }
+    }
 	
 	open func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Swift.Void) {
 		guard let onIntercept = onIntercept else {
@@ -197,6 +250,8 @@ open class OAuth2WebViewController: UIViewController, WKNavigationDelegate {
 			return
 		}
 		let request = navigationAction.request
+        
+        saveCookies()
 		
 		// we compare the scheme and host first, then check the path (if there is any). Not sure if a simple string comparison
 		// would work as there may be URL parameters attached

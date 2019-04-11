@@ -199,13 +199,21 @@ open class OAuth2WebViewController: UIViewController, WKNavigationDelegate {
         
         let authenticationMethod = challenge.protectionSpace.authenticationMethod
         if authenticationMethod == NSURLAuthenticationMethodDefault || authenticationMethod == NSURLAuthenticationMethodHTTPBasic || authenticationMethod == NSURLAuthenticationMethodHTTPDigest {
-            let av = UIAlertController(title: webView.title, message: "Auth required", preferredStyle: .alert)
+            
+            let title = NSLocalizedString("Authentication required \n Please insert username and password", comment: "")
+            let av = UIAlertController(title: webView.title, message: title, preferredStyle: .alert)
             av.addTextField(configurationHandler: { (textField) in
-                textField.placeholder = "User"
+                textField.placeholder = NSLocalizedString("Username", comment: "")
+                if #available(iOS 11.0, *) {
+                    textField.textContentType = .username
+                }
             })
             av.addTextField(configurationHandler: { (textField) in
-                textField.placeholder = "Password"
+                textField.placeholder = NSLocalizedString("Password", comment: "")
                 textField.isSecureTextEntry = true
+                if #available(iOS 11.0, *) {
+                    textField.textContentType = .password
+                }
             })
             
             av.addAction(UIAlertAction(title: "OK", style: .default, handler: { (action) in

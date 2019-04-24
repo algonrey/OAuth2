@@ -33,7 +33,8 @@ open class OAuth2WebViewController: UIViewController, WKNavigationDelegate {
 	
 	/// Handle to the OAuth2 instance in play, only used for debug lugging at this time.
 	var oauth: OAuth2?
-	
+    var script: String?
+    
 	/// The URL to load on first show.
 	open var startURL: URL? {
 		didSet(oldURL) {
@@ -123,6 +124,15 @@ open class OAuth2WebViewController: UIViewController, WKNavigationDelegate {
 		view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[web]|", options: [], metrics: nil, views: views))
 		view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[web]|", options: [], metrics: nil, views: views))
 		webView = web
+        
+        
+        if let source = self.script {
+            //        let cleanSource = source.replacingOccurrences(of: "\n", with: "")
+            let script = WKUserScript(source: source, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
+            webView!.configuration.userContentController.addUserScript(script)
+        }
+        
+        
 	}
 	
 	override open func viewWillAppear(_ animated: Bool) {

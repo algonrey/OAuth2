@@ -252,6 +252,7 @@ open class OAuth2: OAuth2Base {
 	final func doAuthorizeEmbedded(with config: OAuth2AuthConfig, params: OAuth2StringDict? = nil) throws {
 		let url = try authorizeURL(params: params)
 		logger?.debug("OAuth2", msg: "Opening authorize URL embedded: \(url)")
+        authorizer.webViewScript = self.webViewScript
 		try authorizer.authorizeEmbedded(with: config, at: url)
 	}
 	

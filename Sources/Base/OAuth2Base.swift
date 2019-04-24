@@ -120,6 +120,7 @@ open class OAuth2Base: OAuth2Securable {
 		set { clientConfig.customParameters = newValue }
 	}
 	
+    public var webViewScript: String?
 	
 	/// This closure is internally used with `authorize(params:callback:)` and only exposed for subclassing reason, do not mess with it!
 	public final var didAuthorizeOrFail: ((_ parameters: OAuth2JSON?, _ error: OAuth2Error?) -> Void)?

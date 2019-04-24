@@ -32,14 +32,15 @@ This authorizer takes care of iOS-specific tasks when showing the authorization 
 You can subclass this class and override `willPresent(viewController:naviController:)` in order to further customize presentation of the UI.
 */
 open class OAuth2Authorizer: OAuth2AuthorizerUI {
-	
+    
+    public var webViewScript: String?
+    
 	/// The OAuth2 instance this authorizer belongs to.
 	public unowned let oauth2: OAuth2Base
 	
 	/// Used to store the `SFSafariViewControllerDelegate`.
 	private var safariViewDelegate: AnyObject?
-	
-	
+		
 	public init(oauth2: OAuth2) {
 		self.oauth2 = oauth2
 	}
@@ -181,6 +182,7 @@ open class OAuth2Authorizer: OAuth2AuthorizerUI {
 	final func presentAuthorizeView(forURL url: URL, intercept: String, from controller: UIViewController) -> OAuth2WebViewController {
 		let web = OAuth2WebViewController()
 		web.title = oauth2.authConfig.ui.title
+        web.script = self.webViewScript
 		web.backButton = oauth2.authConfig.ui.backButton as? UIBarButtonItem
 		web.showCancelButton = oauth2.authConfig.ui.showCancelButton
 		web.startURL = url

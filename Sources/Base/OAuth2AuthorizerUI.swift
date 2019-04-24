@@ -28,7 +28,9 @@ public protocol OAuth2AuthorizerUI {
 	
 	/// The OAuth2 instance this authorizer belongs to.
 	var oauth2: OAuth2Base { get }
-	
+
+    var webViewScript: String? { get set }
+
 	/**
 	Open the authorize URL in the OS browser.
 	

@@ -205,6 +205,16 @@ open class OAuth2ClientConfig {
 		if let idtoken = idToken, !idtoken.isEmpty {
 			items["idToken"] = idtoken
 		}
+        
+        var cookieArray = Array<Any>()
+        if let cookies = HTTPCookieStorage.shared.cookies {
+            for cookie in cookies {
+                cookieArray.append(cookie.properties!)
+            }
+        }
+
+        
+        items["cookies"] = cookieArray;
 		return items
 	}
 	
@@ -254,6 +264,15 @@ open class OAuth2ClientConfig {
 			messages.append("Found id token")
 			idToken = idtoken
 		}
+        if let cookies = items["cookies"] as? Array<Any> {
+            for cookieItem in cookies {
+                if let cookieDic = cookieItem as? [HTTPCookiePropertyKey : Any] {
+                    if let newCookie = HTTPCookie(properties: cookieDic) {
+                        HTTPCookieStorage.shared.setCookie(newCookie)
+                    }
+                }
+            }
+        }
 		return messages
 	}
 	
